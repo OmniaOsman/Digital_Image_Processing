@@ -2,17 +2,19 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QFileDialog
-from cv2 import cvtColor, COLOR_BGR2GRAY, imread, COLOR_BGR2RGB
+from cv2 import cvtColor, COLOR_BGR2GRAY, imread, COLOR_BGR2RGB, imshow
 from scipy.ndimage import median_filter
 from gaussian import gaussian_filter
-from fusion import fusion
-
+import fusion as fuse
 
 
 class Ui_MainWindow(object):
     def __init__(self):
         self.display_height = None
-        self.disply_width = None
+        self.generatedImage = None
+        self.imagePatch4 = None
+        self.imagePatch3 = None
+        self.display_width = None
         self.median3x3 = None
         self.height = None
         self.width = None
@@ -169,7 +171,6 @@ class Ui_MainWindow(object):
         self.pushButton_6.clicked.connect(self.executeNoiseReductionGaussianFilter)
         self.pushButton_5.clicked.connect(self.executeFusion)
 
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -190,20 +191,20 @@ class Ui_MainWindow(object):
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.disply_width, self.display_height, Qt.KeepAspectRatio)
+        p = convert_to_Qt_format.scaled(self.display_width, self.display_height, Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
     def browseFilePushButton_4(self):
-        fileName4 = QFileDialog.getOpenFileName(self.pushButton_4, 'open file')
-        imagePatch4 = fileName4[0]
-        pixmap4 = QPixmap(imagePatch4)
+        self.fileName4 = QFileDialog.getOpenFileName(self.pushButton_4, 'open file')
+        self.imagePatch4 = self.fileName4[0]
+        pixmap4 = QPixmap(self.imagePatch4)
         self.label.setPixmap(QPixmap(pixmap4))
         # self.resize(pixmap4.width(), pixmap4.height())
 
     def browseFilePushButton_3(self):
-        fileName3 = QFileDialog.getOpenFileName(self.pushButton_3, 'open file')
-        imagePatch3 = fileName3[0]
-        pixmap3 = QPixmap(imagePatch3)
+        self.fileName3 = QFileDialog.getOpenFileName(self.pushButton_3, 'open file')
+        self.imagePatch3 = self.fileName3[0]
+        pixmap3 = QPixmap(self.imagePatch3)
         self.label_2.setPixmap(QPixmap(pixmap3))
 
     # Noise Reduction upload button
@@ -212,7 +213,6 @@ class Ui_MainWindow(object):
         self.imagePatch2 = self.fileName2[0]
         pixmap2 = QPixmap(self.imagePatch2)
         self.label_5.setPixmap(pixmap2)
-        self.label_5.resize(200, 200)
 
     def executeNoiseReductionMedianFilter(self):
         # median Filter
@@ -240,6 +240,7 @@ class Ui_MainWindow(object):
         # display image in label for mask 5x5
         self.label_9.setPixmap(QPixmap.fromImage(img_))
 
+    # Noise Reduction using Gaussian Filter
     def executeNoiseReductionGaussianFilter(self):
         # Gaussian Filter
         self.img = imread(self.imagePatch2)
@@ -253,21 +254,35 @@ class Ui_MainWindow(object):
         # convert median5x5 from GRAY scale to RGB
         color3x3 = cvtColor(gaussian3x3, COLOR_BGR2RGB)
         color5x5 = cvtColor(gaussian5x5, COLOR_BGR2RGB)
+
         # QImage to QPixmap for mask 3x3
         height, width, bytesPerComponent = color3x3.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color3x3, width, height, bytesPerLine, QImage.Format_RGB888)
+
         # display image in label
         self.label_8.setPixmap(QPixmap.fromImage(img_))
+
         # QImage to QPixmap for mask 5x5
         height, width, bytesPerComponent = color5x5.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color5x5, width, height, bytesPerLine, QImage.Format_RGB888)
+
         # display image in label
         self.label_9.setPixmap(QPixmap.fromImage(img_))
 
+    # Image Fusion
     def executeFusion(self):
-        fusion = fusion(self.fileName3, self.fileName4)
+        self.generatedImage = fuse.fusion(self.imagePatch3, self.imagePatch4)
+
+        color = cvtColor(self.generatedImage, COLOR_BGR2RGB)
+        height, width, bytesPerComponent = color.shape
+        bytesPerLine = bytesPerComponent * width
+        img_ = QImage(color, width, height, bytesPerLine, QImage.Format_RGB888)
+
+        # display image in label
+        self.label_6.setPixmap(QPixmap.fromImage(img_))
+
 
 if __name__ == "__main__":
     import sys
@@ -276,5 +291,7 @@ if __name__ == "__main__":
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    MainWindow.setWindowTitle('Digital Image Processing')
+    MainWindow.setGeometry(150, 50, 1050, 700)
     MainWindow.show()
     sys.exit(app.exec_())

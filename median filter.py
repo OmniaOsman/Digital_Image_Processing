@@ -1,24 +1,37 @@
+import numpy
 from cv2 import COLOR_BGR2GRAY, cvtColor, imread, imshow, waitKey
-from numpy import divide, int8, multiply, ravel, sort, zeros_like
+from numpy import ravel, zeros_like
 
 
-def median_filter(gray_img, mask=3):
-    """
-    :param gray_img: gray image
-    :param mask: mask size
-    :return: image with median filter
-    """
-    # set image borders
-    bd = int(mask / 2)
-    # copy image size
-    median_img = zeros_like(gray_img)
-    for i in range(bd, gray_img.shape[0] - bd):
-        for j in range(bd, gray_img.shape[1] - bd):
-            # get mask according with mask
-            kernel = ravel(gray_img[i - bd: i + bd + 1, j - bd: j + bd + 1])
+def median_filter(gray_img, mask):
+    # print(gray_img.shape) --> (291, 218)
+
+    # set borders of gray image
+    border = int(mask / 2)  # if mask = 3, border wil be 1
+
+    # copy gray image size
+    median_img = zeros_like(gray_img)  # Return an array of zeros with the same shape and type as a given array.
+
+    for i in range(border, gray_img.shape[0] - border):  # 1 : 291-1, 1 : 290 so range will be 1 : 290 --> 288 row
+        for j in range(border, gray_img.shape[1] - border):  # 1 : 217 --> 215 column
+            # get mask according to mask
+            kernel = ravel(gray_img[i - border: i + border + 1, j - border: j + border + 1])  # ravel change a 2-dimensional to contiguous flattened array
+
+            # print(gray_img[i - border: i + border + 1, j - border: j + border + 1])
+            # [[131 148 155]
+            #  [133 150 154]
+            # [133 149 153]
+            # print(kernel)
+            # [131 148 155 133 150 154 133 149 153]
+
             # calculate mask median
-            median = sort(kernel)[int8(divide((multiply(mask, mask)), 2) + 1)]
+            median = numpy.median(kernel + 1)
+
+            # print(median)
+            # 150
+
             median_img[i, j] = median
+
     return median_img
 
 

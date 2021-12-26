@@ -4,24 +4,27 @@ import pywt
 
 
 def channelTransform(ch1, ch2, shape):
-    cooef1 = pywt.dwt2(ch1, 'db5', mode='periodization')
-    cooef2 = pywt.dwt2(ch2, 'db5', mode='periodization')
-    cA1, (cH1, cV1, cD1) = cooef1
-    cA2, (cH2, cV2, cD2) = cooef2
+    coefficient1 = pywt.dwt2(ch1, 'db5', mode='periodization')  # dwt2(data, wavelet, mode), db5 is Daubechies (wavelet family)
+    coefficient2 = pywt.dwt2(ch2, 'db5', mode='periodization')
 
+    cA1, (cH1, cV1, cD1) = coefficient1
+    cA2, (cH2, cV2, cD2) = coefficient2
+
+    # Single - level discrete 2-D wavelet transform
     cA = (cA1 + cA2) / 2
     cH = (cH1 + cH2) / 2
     cV = (cV1 + cV2) / 2
     cD = (cD1 + cD2) / 2
+
     fincoC = cA, (cH, cV, cD)
     outImageC = pywt.idwt2(fincoC, 'db5', mode='periodization')
     outImageC = cv2.resize(outImageC, (shape[0], shape[1]))
+
     return outImageC
 
 
 def fusion(img1, img2):
-    # Params
-    FUSION_METHOD = 'mean'  # Can be 'min' || 'max || anything you choose according theory
+    # FUSION_METHOD = 'mean'  # Can be 'min' || 'max || anything you choose according theory
 
     # Read the two image
     I1 = cv2.imread(img1)
@@ -30,8 +33,6 @@ def fusion(img1, img2):
     # Resizing image if both are in different shapes
     I2 = cv2.resize(I2, (I1.shape[1], I1.shape[0]))
 
-    # print(I1.shape)
-    # print(I2.shape)
     # Separating channels
     iR1 = I1.copy()
     iR1[:, :, 1] = iR1[:, :, 2] = 0
@@ -70,4 +71,12 @@ def fusion(img1, img2):
     return outImage
 
 
-fusion("images/PANimage.jpg", "images/multispectral.jpg")
+if __name__ == "__main__":
+    # print(pywt.Modes.modes) # ['zero', 'constant', 'symmetric', 'periodic', 'smooth', 'periodization', 'reflect', 'antisymmetric', 'antireflect']
+    img = fusion("images/PANimage.jpg", "images/multispectral.jpg")
+    i1 = cv2.imread("images/PANimage.jpg")
+    i2 = cv2.imread("images/multispectral.jpg")
+    cv2.imshow("PAN image", i1)
+    cv2.imshow("multi spectral image", i2)
+    cv2.imshow('img', img)
+    cv2.waitKey(0)

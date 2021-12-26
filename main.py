@@ -223,24 +223,24 @@ class Ui_MainWindow(object):
         # turn image in gray scale value
         gray = cvtColor(self.img, COLOR_BGR2GRAY)
 
-        # get values with two different mask size
+        # get values with two different kernelSize size
         median5x5 = median_filter(gray, 5)
         median3x3 = median_filter(gray, 3)
         # convert from GRAY scale to RGB
         color3x3 = cvtColor(median3x3, COLOR_BGR2RGB)
         color5x5 = cvtColor(median5x5, COLOR_BGR2RGB)
-        # QImage to QPixmap for mask 3x3
+        # QImage to QPixmap for kernelSize 3x3
         height, width, bytesPerComponent = color3x3.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color3x3, width, height, bytesPerLine, QImage.Format_RGB888)
-        # display image in label for mask 3x3
+        # display image in label for kernelSize 3x3
         self.label_8.setPixmap(QPixmap.fromImage(img_))
 
-        # QImage to QPixmap for mask 5x5
+        # QImage to QPixmap for kernelSize 5x5
         height, width, bytesPerComponent = color5x5.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color5x5, width, height, bytesPerLine, QImage.Format_RGB888)
-        # display image in label for mask 5x5
+        # display image in label for kernelSize 5x5
         self.label_9.setPixmap(QPixmap.fromImage(img_))
 
     # Noise Reduction using Gaussian Filter
@@ -250,7 +250,7 @@ class Ui_MainWindow(object):
         # turn image in gray scale value
         gray = cvtColor(self.img, COLOR_BGR2GRAY)
 
-        # get values with two different mask size
+        # get values with two different kernelSize size
         gaussian3x3 = gaussian_filter(gray, 3, sigma=1)
         gaussian5x5 = gaussian_filter(gray, 5, sigma=0.8)
 
@@ -258,7 +258,7 @@ class Ui_MainWindow(object):
         color3x3 = cvtColor(gaussian3x3, COLOR_BGR2RGB)
         color5x5 = cvtColor(gaussian5x5, COLOR_BGR2RGB)
 
-        # QImage to QPixmap for mask 3x3
+        # QImage to QPixmap for kernelSize 3x3
         height, width, bytesPerComponent = color3x3.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color3x3, width, height, bytesPerLine, QImage.Format_RGB888)
@@ -266,7 +266,7 @@ class Ui_MainWindow(object):
         # display image in label
         self.label_8.setPixmap(QPixmap.fromImage(img_))
 
-        # QImage to QPixmap for mask 5x5
+        # QImage to QPixmap for kernelSize 5x5
         height, width, bytesPerComponent = color5x5.shape
         bytesPerLine = bytesPerComponent * width
         img_ = QImage(color5x5, width, height, bytesPerLine, QImage.Format_RGB888)

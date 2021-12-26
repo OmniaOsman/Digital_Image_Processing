@@ -45,6 +45,7 @@ if __name__ == "__main__":
     median5x5 = median_filter(gray, 5)
 
     # show result images
+    imshow("Original image", img)
     imshow("median filter with 3x3 mask", median3x3)
     imshow("median filter with 5x5 mask", median5x5)
     waitKey(0)

@@ -7,7 +7,7 @@ def median_filter(gray_img, mask):
     # print(gray_img.shape) --> (291, 218)
 
     # set borders of gray image
-    border = int(mask / 2)  # if kernelSize = 3, border wil be 1
+    border = int(mask / 2)  # if mask = 3, border wil be 1
 
     # copy gray image size
     median_img = zeros_like(gray_img)  # Return an array of zeros with the same shape and type as a given array.

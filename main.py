@@ -2,10 +2,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QFileDialog
-from cv2 import cvtColor, COLOR_BGR2GRAY, imread, COLOR_BGR2RGB, imshow
+from cv2 import cvtColor, COLOR_BGR2GRAY, imread, COLOR_BGR2RGB
 from scipy.ndimage import median_filter
-from gaussian import gaussian_filter
+
 import fusion as fuse
+from gaussian import gaussian_filter
 
 
 class Ui_MainWindow(object):
@@ -188,14 +189,14 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "3X3 Mask"))
         self.label_10.setText(_translate("MainWindow", "5X5 Mask"))
 
-    def convert_cv_qt(self, cv_img):
-        """Convert from an opencv image to QPixmap"""
-        rgb_image = cvtColor(cv_img, COLOR_BGR2GRAY)
-        h, w, ch = rgb_image.shape
-        bytes_per_line = ch * w
-        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.display_width, self.display_height, Qt.KeepAspectRatio)
-        return QPixmap.fromImage(p)
+    # def convert_cv_qt(self, cv_img):
+    #     """Convert from an opencv image to QPixmap"""
+    #     rgb_image = cvtColor(cv_img, COLOR_BGR2GRAY)
+    #     h, w, ch = rgb_image.shape
+    #     bytes_per_line = ch * w
+    #     convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+    #     p = convert_to_Qt_format.scaled(self.display_width, self.display_height, Qt.KeepAspectRatio)
+    #     return QPixmap.fromImage(p)
 
     def browseFilePushButton_4(self):
         self.fileName4 = QFileDialog.getOpenFileName(self.pushButton_4, 'open file')
@@ -226,6 +227,7 @@ class Ui_MainWindow(object):
         # get values with two different kernelSize size
         median5x5 = median_filter(gray, 5)
         median3x3 = median_filter(gray, 3)
+
         # convert from GRAY scale to RGB
         color3x3 = cvtColor(median3x3, COLOR_BGR2RGB)
         color5x5 = cvtColor(median5x5, COLOR_BGR2RGB)

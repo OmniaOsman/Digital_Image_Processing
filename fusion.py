@@ -73,9 +73,9 @@ def fusion(img1, img2):
 
 if __name__ == "__main__":
     # print(pywt.Modes.modes) # ['zero', 'constant', 'symmetric', 'periodic', 'smooth', 'periodization', 'reflect', 'antisymmetric', 'antireflect']
-    img = fusion("images/PANimage.jpg", "images/multispectral.jpg")
-    i1 = cv2.imread("images/PANimage.jpg")
-    i2 = cv2.imread("images/multispectral.jpg")
+    img = fusion("images/f1.jpg", "images/f2.jpg")
+    i1 = cv2.imread("images/f1.jpg")
+    i2 = cv2.imread("images/f2.jpg")
     cv2.imshow("PAN image", i1)
     cv2.imshow("multi spectral image", i2)
     cv2.imshow('img', img)
